@@ -1,4 +1,4 @@
-# jme3-es-bullet
+# ![Jme-es-bullet](icon-64.png) Jme-es-bullet
 A bullet Zay-ES integration for jMonkeyEngine.
 
 ## How to build
