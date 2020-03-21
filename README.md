@@ -119,6 +119,9 @@ You can start the character demo using gradle:
 $ ./gradlew :demo:character:run
 ```
 
+### Acknowledgements
+-   Icon made by [Freepik](https://www.freepik.com/home) from www.flaticon.com
+
 
 ## Bullet documentation
 Some information gathered about bullet during the creation of the Bullet Zay-ES integration library.
