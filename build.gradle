@@ -1,0 +1,55 @@
+plugins {
+    id 'java'
+    id 'idea'
+    id 'maven-publish'
+}
+
+ext {
+    jmeVersion = "[3.2,)" // version >= 3.2
+    zayESVersion = "[1.3,)"
+    sio2Version = "[1.3,)"
+    lombokVersion = "[1.18,)"
+    jme3UtilsVersion = "[0.1,)"
+}
+
+repositories {
+    mavenLocal()
+    jcenter()
+}
+
+dependencies {
+    // dependencies that should be provided
+    compileOnly "org.projectlombok:lombok:${lombokVersion}"
+    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+
+    // dependencies that are provided
+    compile "org.jmonkeyengine:jme3-bullet:${jmeVersion}"
+    compile "com.simsilica:zay-es:${zayESVersion}"
+    compile "com.simsilica:sio2:${sio2Version}"
+    compile "org.chimpstack:jme3-utils:${jme3UtilsVersion}"
+}
+
+// a task to create the sources jar
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allSource
+    archiveClassifier = 'sources'
+}
+
+// a task to create the javadoc jar
+task javadocJar(type: Jar) {
+    from javadoc
+    archiveClassifier = 'javadoc'
+}
+
+publishing {
+    publications {
+        MyPublication(MavenPublication) {
+            from components.java
+            artifact sourcesJar
+            artifact javadocJar
+            groupId 'org.chimpstack'
+            artifactId 'jme3-es-bullet'
+            version '0.1.0'
+        }
+    }
+}

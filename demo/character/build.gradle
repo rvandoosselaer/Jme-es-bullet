@@ -1,0 +1,72 @@
+plugins {
+    id 'java'
+    id 'idea'
+    id 'application'
+}
+
+ext {
+    jmeVersion = "[3.2,)"
+    zayESVersion = "[1.3,)"
+    sio2Version = "[1.3,)"
+    lemurVersion = "[1.12,)"
+    jme3UtilsVersion = "[0.1,)"
+    slf4jVersion = "[1.8,)"
+    log4j2Version = "[2.11,)"
+    jacksonVersion = "[2.9,)"
+}
+
+repositories {
+    mavenLocal()
+    jcenter()
+    maven {
+        // jbullet dependency
+        url "https://dl.bintray.com/jmonkeyengine/org.jmonkeyengine"
+    }
+}
+
+def useNativeBullet = true
+
+dependencies {
+    // jme3-es-bullet
+    compile(rootProject) {
+        exclude group: "org.jmonkeyengine", module: "jme3-bullet"
+    }
+
+    // jmonkey engine
+    compile "org.jmonkeyengine:jme3-core:${jmeVersion}"
+    compile "org.jmonkeyengine:jme3-desktop:${jmeVersion}"
+    compile "org.jmonkeyengine:jme3-lwjgl:${jmeVersion}"
+    compile "org.jmonkeyengine:jme3-effects:${jmeVersion}"
+
+    if (useNativeBullet) {
+        compile "org.jmonkeyengine:jme3-bullet:$jmeVersion"
+        compile "org.jmonkeyengine:jme3-bullet-native:$jmeVersion"
+    } else {
+        compile("org.jmonkeyengine:jme3-jbullet:$jmeVersion") {
+            exclude group: 'jbullet', module: 'jbullet'
+            exclude group: 'stack-alloc', module: 'stack-alloc'
+        }
+        // libraries are found on github: https://github.com/jMonkeyEngine/jmonkeyengine/tree/master/lib
+        compile files('lib/jbullet.jar')
+        runtime files('lib/stack-alloc.jar')
+    }
+
+    // utils
+    compileOnly "org.projectlombok:lombok:${lombokVersion}"
+    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+    compile "org.chimpstack:jme3-utils:${jme3UtilsVersion}"
+    compile "com.simsilica:lemur:${lemurVersion}"
+    compile "com.simsilica:sio2:${sio2Version}"
+
+    // logging
+    compile "org.slf4j:slf4j-api:${slf4jVersion}"
+    compile "org.apache.logging.log4j:log4j-core:${log4j2Version}"
+    compile "org.apache.logging.log4j:log4j-api:${log4j2Version}"
+    compile "org.apache.logging.log4j:log4j-slf4j18-impl:${log4j2Version}"
+    compile "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:${jacksonVersion}"
+    compile "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
+}
+
+run {
+    mainClassName = "org.chimpstack.jme3.es.bullet.character.Main"
+}

@@ -1,0 +1,21 @@
+Configuration:
+  appenders:
+    Console:
+      name: STDOUT
+      PatternLayout:
+        Pattern: "%d %-5p [%t] %C (%F:%L) - %m%n"
+
+  Loggers:
+    logger:
+      - name: org.chimpstack
+        level: all
+      - name: com.jme3
+        level: info
+      - name: com.simsilica
+        level: info
+      - name: org.chimpstack.jme3.es.bullet.DefaultPhysicalShapeRegistry
+        level: debug
+    Root:
+      level: info
+      AppenderRef:
+        - ref: STDOUT

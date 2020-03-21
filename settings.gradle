@@ -1,0 +1,8 @@
+rootProject.name = "jme3-es-bullet"
+
+include ':demo:cubes'
+include ':demo:character'
+
+// better sub-project names
+project(":demo:cubes").name = "cubes-demo"
+project(":demo:character").name = "character-demo"
