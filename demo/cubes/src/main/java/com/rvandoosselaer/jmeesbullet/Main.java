@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2019, Chimpstack
+ * Copyright (c) 2020, rvandoosselaer
  * All rights reserved.
  * <p>
  * Redistribution and use in source and binary forms, with or without
@@ -27,13 +27,14 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.chimpstack.jme3.es.bullet;
+package com.rvandoosselaer.jmeesbullet;
 
+import com.jme3.app.FlyCamAppState;
+import com.jme3.app.SimpleApplication;
 import com.jme3.app.StatsAppState;
 import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.collision.shapes.MeshCollisionShape;
 import com.jme3.bullet.collision.shapes.SphereCollisionShape;
-import com.jme3.input.KeyInput;
 import com.jme3.light.AmbientLight;
 import com.jme3.light.DirectionalLight;
 import com.jme3.math.ColorRGBA;
@@ -50,27 +51,23 @@ import com.jme3.scene.shape.Quad;
 import com.jme3.scene.shape.Sphere;
 import com.jme3.shadow.DirectionalLightShadowFilter;
 import com.jme3.shadow.EdgeFilteringMode;
+import com.rvandoosselaer.jmeesbullet.debug.BulletSystemDebugState;
+import com.rvandoosselaer.jmeesbullet.debug.PhysicalEntityDebugPublisher;
+import com.rvandoosselaer.jmeesbullet.es.Impulse;
+import com.rvandoosselaer.jmeesbullet.es.Mass;
+import com.rvandoosselaer.jmeesbullet.es.PhysicalShape;
+import com.rvandoosselaer.jmeesbullet.es.WarpPosition;
 import com.simsilica.es.EntityData;
 import com.simsilica.es.base.DefaultEntityData;
 import com.simsilica.lemur.GuiGlobals;
-import com.simsilica.lemur.Label;
 import com.simsilica.lemur.input.Button;
 import com.simsilica.lemur.input.FunctionId;
-import com.simsilica.lemur.input.InputMapper;
 import com.simsilica.lemur.style.BaseStyles;
 import com.simsilica.state.GameSystemsState;
-import org.chimpstack.jme3.ApplicationGlobals;
-import org.chimpstack.jme3.JmeLauncher;
-import org.chimpstack.jme3.es.bullet.debug.BulletSystemDebugState;
-import org.chimpstack.jme3.es.bullet.debug.PhysicalEntityDebugPublisher;
-import org.chimpstack.jme3.gui.GuiHelper;
-import org.chimpstack.jme3.input.ThirdPersonCamera;
-import org.chimpstack.jme3.util.GeometryUtils;
 
-import java.util.Set;
 import java.util.stream.IntStream;
 
-public class Main extends JmeLauncher {
+public class Main extends SimpleApplication {
 
     private final FunctionId FUNC_SHOOT_BALL = new FunctionId("shoot-ball");
     private final FunctionId FUNC_SHOOT_CUBE = new FunctionId("shoot-cube");
@@ -83,8 +80,6 @@ public class Main extends JmeLauncher {
     private DirectionalLight directionalLight;
     private ModelRegistry modelRegistry;
 
-    private Label physicsTicks;
-
     public static void main(String[] args) {
         new Main().start();
     }
@@ -92,18 +87,12 @@ public class Main extends JmeLauncher {
     public Main() {
         super(new StatsAppState(),
                 new GameSystemsState(true),
-                new ThirdPersonCamera()
-                        .setDragToRotate(true)
-                        .setPitch(30 * FastMath.DEG_TO_RAD)
-                        .setYaw(FastMath.QUARTER_PI)
-                        .setZoomSpeed(20f)
-                        .setDistance(20f)
-                        .setMinDistance(5f)
-                        .setMaxDistance(40f));
+                new FlyCamAppState());
     }
 
     @Override
-    public void init() {
+    public void simpleInitApp() {
+        GuiGlobals.initialize(this);
         BaseStyles.loadGlassStyle();
         GuiGlobals.getInstance().getStyles().setDefaultStyle("glass");
 
@@ -118,9 +107,8 @@ public class Main extends JmeLauncher {
 
         setupPostProcessing();
 
-        physicsTicks = new Label(String.format("%d ticks per second", -1));
-        physicsTicks.setLocalTranslation(GuiHelper.getWidth() - physicsTicks.getPreferredSize().x, GuiHelper.getHeight(), 1);
-        ApplicationGlobals.getInstance().getGuiNode().attachChild(physicsTicks);
+        flyCam.setMoveSpeed(5);
+        flyCam.setDragToRotate(true);
     }
 
     //@SneakyThrows(SQLException.class)
@@ -142,11 +130,14 @@ public class Main extends JmeLauncher {
         shapeRegistry.register(new PhysicalShape("cube"), new BoxCollisionShape(new Vector3f(0.5f, 0.5f, 0.5f)));
         shapeRegistry.register(new PhysicalShape("ball"), new SphereCollisionShape(0.5f));
         // register some models
-        Geometry staticBox = GeometryUtils.createGeometry(new Box(1.0f, 1.0f, 1.0f), GuiGlobals.getInstance().createMaterial(ColorRGBA.Brown, true));
+        Geometry staticBox = new Geometry("big-box", new Box(1.0f, 1.0f, 1.0f));
+        staticBox.setMaterial(GuiGlobals.getInstance().createMaterial(ColorRGBA.Brown, true).getMaterial());
         staticBox.setShadowMode(RenderQueue.ShadowMode.CastAndReceive);
-        Geometry cube = GeometryUtils.createGeometry(new Box(0.5f, 0.5f, 0.5f), GuiGlobals.getInstance().createMaterial(ColorRGBA.randomColor(), true));
+        Geometry cube = new Geometry("small-box", new Box(0.5f, 0.5f, 0.5f));
+        cube.setMaterial(GuiGlobals.getInstance().createMaterial(ColorRGBA.randomColor(), true).getMaterial());
         cube.setShadowMode(RenderQueue.ShadowMode.CastAndReceive);
-        Geometry sphere = GeometryUtils.createGeometry(new Sphere(16, 16, 0.5f), GuiGlobals.getInstance().createMaterial(ColorRGBA.randomColor(), true));
+        Geometry sphere = new Geometry("sphere", new Sphere(16, 16, 0.5f));
+        sphere.setMaterial(GuiGlobals.getInstance().createMaterial(ColorRGBA.randomColor(), true).getMaterial());
         sphere.setShadowMode(RenderQueue.ShadowMode.CastAndReceive);
         modelRegistry.register(new Model("static-box"), staticBox);
         modelRegistry.register(new Model("cube"), cube);
@@ -157,8 +148,8 @@ public class Main extends JmeLauncher {
         bulletSystem.addPhysicalEntityListener(new PositionPublisher(entityData));
 
         // create static floor
-        Geometry floor = GeometryUtils.createGeometry(new Quad(32, 32), GuiGlobals.getInstance().createMaterial(ColorRGBA.LightGray, true));
-        floor.setName("Floor");
+        Geometry floor = new Geometry("floor", new Quad(32, 32));
+        floor.setMaterial(GuiGlobals.getInstance().createMaterial(ColorRGBA.LightGray, true).getMaterial());
         floor.setShadowMode(RenderQueue.ShadowMode.Receive);
         floor.move(-16, 0, 16);
         floor.rotate(new Quaternion().fromAngleAxis(-FastMath.HALF_PI, Vector3f.UNIT_X));
@@ -242,19 +233,4 @@ public class Main extends JmeLauncher {
                 new Impulse(dir.mult(10)));
     }
 
-    private boolean cameraEnabled = false;
-
-    @Override
-    public void simpleUpdate(float tpf) {
-        ThirdPersonCamera camera = getStateManager().getState(ThirdPersonCamera.class);
-        if (!cameraEnabled && camera.isEnabled()) {
-            InputMapper inputMapper = GuiGlobals.getInstance().getInputMapper();
-            Set<InputMapper.Mapping> dragMappings = inputMapper.getMappings(ThirdPersonCamera.FUNCTION_DRAG);
-            dragMappings.forEach(inputMapper::removeMapping);
-            inputMapper.map(ThirdPersonCamera.FUNCTION_DRAG, Button.MOUSE_BUTTON3);
-            inputMapper.map(ThirdPersonCamera.FUNCTION_DRAG, KeyInput.KEY_V);
-            cameraEnabled = true;
-        }
-        physicsTicks.setText(String.format("%d ticks per second", bulletSystem.getTicksPerSecond()));
-    }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2019, Chimpstack
+ * Copyright (c) 2020, rvandoosselaer
  * All rights reserved.
  * <p>
  * Redistribution and use in source and binary forms, with or without
@@ -27,16 +27,16 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.chimpstack.jme3.es.bullet;
+package com.rvandoosselaer.jmeesbullet;
 
 import com.jme3.app.Application;
+import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.BaseAppState;
 import com.jme3.scene.Spatial;
 import com.simsilica.es.Entity;
 import com.simsilica.es.EntityContainer;
 import com.simsilica.es.EntityData;
 import lombok.RequiredArgsConstructor;
-import org.chimpstack.jme3.ApplicationGlobals;
 
 @RequiredArgsConstructor
 public class VisualState extends BaseAppState {
@@ -76,7 +76,7 @@ public class VisualState extends BaseAppState {
             Spatial spatial = modelRegistry.get(model).clone(false);
             spatial.setLocalTranslation(position.getLocation());
             spatial.setLocalRotation(position.getRotation());
-            ApplicationGlobals.getInstance().getRootNode().attachChild(spatial);
+            ((SimpleApplication) getApplication()).getRootNode().attachChild(spatial);
 
             return spatial;
         }
