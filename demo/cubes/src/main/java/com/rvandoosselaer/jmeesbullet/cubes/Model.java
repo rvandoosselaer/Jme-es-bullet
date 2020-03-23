@@ -27,37 +27,20 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.rvandoosselaer.jmeesbullet;
+package com.rvandoosselaer.jmeesbullet.cubes;
 
-import com.simsilica.es.EntityData;
-import com.simsilica.sim.SimTime;
-import lombok.RequiredArgsConstructor;
+import com.simsilica.es.PersistentComponent;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
-@RequiredArgsConstructor
-public class PositionPublisher implements PhysicalEntityListener {
+@Getter
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
+public class Model implements PersistentComponent {
 
-    private final EntityData entityData;
-
-    @Override
-    public void startFrame(SimTime time) {
-    }
-
-    @Override
-    public void physicalEntityAdded(PhysicalEntity physicalEntity) {
-        entityData.setComponent(physicalEntity.getEntityId(), new Position(physicalEntity.getLocation(), physicalEntity.getRotation()));
-    }
-
-    @Override
-    public void physicalEntityUpdated(PhysicalEntity physicalEntity) {
-        entityData.setComponent(physicalEntity.getEntityId(), new Position(physicalEntity.getLocation(), physicalEntity.getRotation()));
-    }
-
-    @Override
-    public void physicalEntityRemoved(PhysicalEntity physicalEntity) {
-    }
-
-    @Override
-    public void endFrame(SimTime time) {
-    }
+    private String modelId;
 
 }

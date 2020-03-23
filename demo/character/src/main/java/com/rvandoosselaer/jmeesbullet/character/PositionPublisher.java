@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2019, Chimpstack
+ * Copyright (c) 2020, rvandoosselaer
  * All rights reserved.
  * <p>
  * Redistribution and use in source and binary forms, with or without
@@ -27,20 +27,39 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.chimpstack.jme3.es.bullet.character;
+package com.rvandoosselaer.jmeesbullet.character;
 
-import com.simsilica.es.EntityComponent;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import com.rvandoosselaer.jmeesbullet.PhysicalEntity;
+import com.rvandoosselaer.jmeesbullet.PhysicalEntityListener;
+import com.simsilica.es.EntityData;
+import com.simsilica.sim.SimTime;
+import lombok.RequiredArgsConstructor;
 
-@Getter
-@ToString
-@AllArgsConstructor
-@NoArgsConstructor
-public class Velocity implements EntityComponent {
+@RequiredArgsConstructor
+public class PositionPublisher implements PhysicalEntityListener {
 
-    private float velocity;
+    private final EntityData entityData;
+
+    @Override
+    public void startFrame(SimTime time) {
+    }
+
+    @Override
+    public void physicalEntityAdded(PhysicalEntity physicalEntity) {
+        entityData.setComponent(physicalEntity.getEntityId(), new Position(physicalEntity.getLocation(), physicalEntity.getRotation()));
+    }
+
+    @Override
+    public void physicalEntityUpdated(PhysicalEntity physicalEntity) {
+        entityData.setComponent(physicalEntity.getEntityId(), new Position(physicalEntity.getLocation(), physicalEntity.getRotation()));
+    }
+
+    @Override
+    public void physicalEntityRemoved(PhysicalEntity physicalEntity) {
+    }
+
+    @Override
+    public void endFrame(SimTime time) {
+    }
 
 }

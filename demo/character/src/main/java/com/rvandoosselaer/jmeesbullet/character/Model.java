@@ -27,26 +27,20 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.rvandoosselaer.jmeesbullet;
+package com.rvandoosselaer.jmeesbullet.character;
 
-import com.jme3.math.Quaternion;
-import com.jme3.math.Vector3f;
 import com.simsilica.es.PersistentComponent;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-/**
- * A component specifying the location and rotation of a model.
- */
 @Getter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class Position implements PersistentComponent {
+public class Model implements PersistentComponent {
 
-    private Vector3f location;
-    private Quaternion rotation;
+    private String modelId;
 
 }

@@ -27,44 +27,20 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.rvandoosselaer.jmeesbullet;
+package com.rvandoosselaer.jmeesbullet.character;
 
-import com.jme3.scene.Spatial;
-import lombok.extern.slf4j.Slf4j;
+import com.simsilica.es.EntityComponent;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+@Getter
+@ToString
+@AllArgsConstructor
+@NoArgsConstructor
+public class Velocity implements EntityComponent {
 
-@Slf4j
-public class DefaultModelRegistry implements ModelRegistry {
-
-    private final Map<String, Spatial> registry = new ConcurrentHashMap<>();
-
-    @Override
-    public Spatial register(Model model, Spatial spatial) {
-        registry.put(model.getModelId(), spatial);
-        log.trace("Registering {} -> {}", model, spatial);
-        return spatial;
-    }
-
-    @Override
-    public Spatial get(Model model) {
-        Spatial spatial = registry.get(model.getModelId());
-        if (spatial != null) {
-            log.trace("Retrieving {} -> {}", model, spatial);
-            return spatial;
-        }
-
-        spatial = loadModel(model);
-        if (spatial == null) {
-            throw new IllegalArgumentException("No model found for " + model);
-        }
-
-        return register(model, spatial);
-    }
-
-    protected Spatial loadModel(Model model) {
-        return null;
-    }
+    private float velocity;
 
 }

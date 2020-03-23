@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2019, Chimpstack
+ * Copyright (c) 2020, rvandoosselaer
  * All rights reserved.
  * <p>
  * Redistribution and use in source and binary forms, with or without
@@ -27,22 +27,19 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.chimpstack.jme3.es.bullet.character;
+package com.rvandoosselaer.jmeesbullet.character;
 
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.collision.PhysicsRayTestResult;
 import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
+import com.rvandoosselaer.jmeesbullet.PhysicalEntity;
+import com.rvandoosselaer.jmeesbullet.PhysicalEntityDriver;
+import com.rvandoosselaer.jmeesbullet.RigidBodyEntity;
 import com.simsilica.es.Entity;
-import com.simsilica.state.GameSystemsState;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.chimpstack.jme3.ApplicationGlobals;
-import org.chimpstack.jme3.es.bullet.BulletSystem;
-import org.chimpstack.jme3.es.bullet.PhysicalEntity;
-import org.chimpstack.jme3.es.bullet.PhysicalEntityDriver;
-import org.chimpstack.jme3.es.bullet.RigidBodyEntity;
 
 import java.util.List;
 
@@ -51,22 +48,18 @@ import java.util.List;
 public class PlayerInputDriver implements PhysicalEntityDriver {
 
     private final Entity entity;
+    private final PhysicsSpace physicsSpace;
     @Setter
     private PlayerInput playerInput;
     private RigidBodyEntity rigidBodyEntity;
     private Vector3f vTemp = new Vector3f();
     private float walkSpeed = 3;
     private boolean jumping;
-    private PhysicsSpace physicsSpace;
 
     @Override
     public void initialize(PhysicalEntity entity) {
         log.trace("Initialize - {}", entity);
         rigidBodyEntity = (RigidBodyEntity) entity.getPhysicalObject();
-
-        // retrieve the physics space, we need this to perform raytests to check if we are on the ground
-        GameSystemsState systems = ApplicationGlobals.getInstance().getApplication().getStateManager().getState(GameSystemsState.class);
-        physicsSpace = systems.get(BulletSystem.class).getPhysicsSpace();
     }
 
     @Override

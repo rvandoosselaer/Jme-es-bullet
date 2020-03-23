@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2019, Chimpstack
+ * Copyright (c) 2020, rvandoosselaer
  * All rights reserved.
  * <p>
  * Redistribution and use in source and binary forms, with or without
@@ -27,18 +27,19 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.chimpstack.jme3.es.bullet.character;
+package com.rvandoosselaer.jmeesbullet.character;
 
 import com.jme3.app.Application;
 import com.jme3.app.state.BaseAppState;
+import com.rvandoosselaer.jmeesbullet.BulletSystem;
+import com.rvandoosselaer.jmeesbullet.es.Mass;
+import com.rvandoosselaer.jmeesbullet.es.PhysicalShape;
+import com.rvandoosselaer.jmeesbullet.es.WarpPosition;
 import com.simsilica.es.Entity;
 import com.simsilica.es.EntityContainer;
 import com.simsilica.es.EntityData;
+import com.simsilica.state.GameSystemsState;
 import lombok.RequiredArgsConstructor;
-import org.chimpstack.jme3.es.bullet.BulletSystem;
-import org.chimpstack.jme3.es.bullet.Mass;
-import org.chimpstack.jme3.es.bullet.PhysicalShape;
-import org.chimpstack.jme3.es.bullet.WarpPosition;
 
 @RequiredArgsConstructor
 public class PlayerInputState extends BaseAppState {
@@ -81,7 +82,7 @@ public class PlayerInputState extends BaseAppState {
 
         @Override
         protected PlayerInputDriver addObject(Entity e) {
-            PlayerInputDriver driver = new PlayerInputDriver(e);
+            PlayerInputDriver driver = new PlayerInputDriver(e, getState(GameSystemsState.class).get(BulletSystem.class).getPhysicsSpace());
             bulletSystem.setPhysicalEntityDriver(e.getId(), driver);
             updateObject(driver, e);
             return driver;

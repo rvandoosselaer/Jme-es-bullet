@@ -66,5 +66,5 @@ dependencies {
 }
 
 run {
-    mainClassName = "org.chimpstack.jme3.es.bullet.Main"
+    mainClassName = "com.rvandoosselaer.jmeesbullet.cubes.Main"
 }

@@ -27,28 +27,26 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.rvandoosselaer.jmeesbullet;
+package com.rvandoosselaer.jmeesbullet.cubes;
 
-import com.jme3.scene.Spatial;
+import com.jme3.math.Quaternion;
+import com.jme3.math.Vector3f;
+import com.simsilica.es.PersistentComponent;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 /**
- * A register of spatials
+ * A component specifying the location and rotation of a model.
  */
-public interface ModelRegistry {
+@Getter
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
+public class Position implements PersistentComponent {
 
-    /**
-     * Register the spatial with the model
-     * @param model the model key
-     * @param spatial the spatial
-     * @return the spatial
-     */
-    public Spatial register(Model model, Spatial spatial);
-
-    /**
-     * Retrieve the spatial for the model
-     * @param model the model key
-     * @return the spatial linked to the model
-     */
-    public Spatial get(Model model);
+    private Vector3f location;
+    private Quaternion rotation;
 
 }

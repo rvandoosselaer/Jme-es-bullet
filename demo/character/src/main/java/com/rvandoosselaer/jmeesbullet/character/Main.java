@@ -1,5 +1,7 @@
-package org.chimpstack.jme3.es.bullet.character;
+package com.rvandoosselaer.jmeesbullet.character;
 
+import com.jme3.app.FlyCamAppState;
+import com.jme3.app.SimpleApplication;
 import com.jme3.app.StatsAppState;
 import com.jme3.bullet.collision.PhysicsCollisionObject;
 import com.jme3.bullet.collision.shapes.CollisionShape;
@@ -7,7 +9,6 @@ import com.jme3.input.KeyInput;
 import com.jme3.light.AmbientLight;
 import com.jme3.light.DirectionalLight;
 import com.jme3.math.ColorRGBA;
-import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.post.FilterPostProcessor;
@@ -18,28 +19,29 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.Spatial;
 import com.jme3.shadow.DirectionalLightShadowFilter;
 import com.jme3.shadow.EdgeFilteringMode;
+import com.rvandoosselaer.jmeesbullet.BulletSystem;
+import com.rvandoosselaer.jmeesbullet.CollisionShapeHelper;
+import com.rvandoosselaer.jmeesbullet.DefaultPhysicalShapeRegistry;
+import com.rvandoosselaer.jmeesbullet.PhysicalShapeRegistry;
+import com.rvandoosselaer.jmeesbullet.debug.BulletSystemDebugState;
+import com.rvandoosselaer.jmeesbullet.debug.PhysicalEntityDebugPublisher;
+import com.rvandoosselaer.jmeesbullet.es.Mass;
+import com.rvandoosselaer.jmeesbullet.es.PhysicalShape;
+import com.rvandoosselaer.jmeesbullet.es.WarpPosition;
 import com.simsilica.es.EntityData;
 import com.simsilica.es.EntityId;
 import com.simsilica.es.WatchedEntity;
 import com.simsilica.es.base.DefaultEntityData;
-import com.simsilica.lemur.Axis;
-import com.simsilica.lemur.Container;
 import com.simsilica.lemur.GuiGlobals;
-import com.simsilica.lemur.Label;
-import com.simsilica.lemur.component.SpringGridLayout;
-import com.simsilica.lemur.input.*;
+import com.simsilica.lemur.input.AnalogFunctionListener;
+import com.simsilica.lemur.input.FunctionId;
+import com.simsilica.lemur.input.InputMapper;
+import com.simsilica.lemur.input.InputState;
+import com.simsilica.lemur.input.StateFunctionListener;
 import com.simsilica.lemur.style.BaseStyles;
 import com.simsilica.state.GameSystemsState;
-import org.chimpstack.jme3.ApplicationGlobals;
-import org.chimpstack.jme3.JmeLauncher;
-import org.chimpstack.jme3.es.bullet.*;
-import org.chimpstack.jme3.es.bullet.debug.BulletSystemDebugState;
-import org.chimpstack.jme3.es.bullet.debug.PhysicalEntityDebugPublisher;
-import org.chimpstack.jme3.gui.GuiHelper;
-import org.chimpstack.jme3.input.ThirdPersonCamera;
-import org.chimpstack.jme3.util.GeometryUtils;
 
-public class Main extends JmeLauncher implements StateFunctionListener, AnalogFunctionListener {
+public class Main extends SimpleApplication implements StateFunctionListener, AnalogFunctionListener {
 
     public static final FunctionId FUNCTION_MOVE = new FunctionId("move");
     public static final FunctionId FUNCTION_STRAFE = new FunctionId("strafe");
@@ -64,9 +66,6 @@ public class Main extends JmeLauncher implements StateFunctionListener, AnalogFu
     private float move;
     private float strafe;
     private boolean jumping;
-    private Container container;
-    private Label physicsTicks;
-    private Label speed;
 
     public static void main(String[] args) {
         new Main().start();
@@ -75,19 +74,12 @@ public class Main extends JmeLauncher implements StateFunctionListener, AnalogFu
     public Main() {
         super(new StatsAppState(),
                 new GameSystemsState(true),
-                new ThirdPersonCamera()
-                        .setDragToRotate(true)
-                        .setPitch(30 * FastMath.DEG_TO_RAD)
-                        .setMinPitch(-FastMath.QUARTER_PI)
-                        .setMaxPitch(89 * FastMath.DEG_TO_RAD)
-                        .setZoomSpeed(20f)
-                        .setDistance(10f)
-                        .setMinDistance(2f)
-                        .setMaxDistance(20f));
+                new FlyCamAppState());
     }
 
     @Override
-    public void init() {
+    public void simpleInitApp() {
+        GuiGlobals.initialize(this);
         BaseStyles.loadGlassStyle();
         GuiGlobals.getInstance().getStyles().setDefaultStyle("glass");
 
@@ -106,14 +98,8 @@ public class Main extends JmeLauncher implements StateFunctionListener, AnalogFu
         inputMapper.map(FUNCTION_STRAFE, KeyInput.KEY_D);
         inputMapper.map(FUNCTION_JUMP, KeyInput.KEY_SPACE);
 
-        inputMapper.addStateListener(this, ThirdPersonCamera.FUNCTION_DRAG, FUNCTION_JUMP);
+        inputMapper.addStateListener(this, FUNCTION_JUMP);
         inputMapper.addAnalogListener(this, FUNCTION_MOVE, FUNCTION_STRAFE);
-
-        container = new Container(new SpringGridLayout(Axis.Y, Axis.X));
-        physicsTicks = container.addChild(new Label(String.format("%d ticks per second", -1)));
-        speed = container.addChild(new Label(String.format("speed: %.1f", 0f)));
-        container.setLocalTranslation(GuiHelper.getWidth() - container.getPreferredSize().x, GuiHelper.getHeight(), 1);
-        ApplicationGlobals.getInstance().getGuiNode().attachChild(container);
     }
 
     protected void setupGameSystems() {
@@ -159,9 +145,6 @@ public class Main extends JmeLauncher implements StateFunctionListener, AnalogFu
         // add bullet listeners
         bulletSystem.addPhysicalEntityListener(new PositionPublisher(entityData));
         bulletSystem.addPhysicalEntityListener(new PhysicalEntityDebugPublisher(entityData));
-
-        // add coordinate axes
-        rootNode.attachChild(GeometryUtils.createCoordinateAxes());
     }
 
     protected void setupLights() {
@@ -209,9 +192,7 @@ public class Main extends JmeLauncher implements StateFunctionListener, AnalogFu
 
     @Override
     public void valueChanged(FunctionId func, InputState value, double tpf) {
-        if (func == ThirdPersonCamera.FUNCTION_DRAG) {
-            rotating = value != InputState.Off;
-        } else if (func == FUNCTION_JUMP) {
+        if (func == FUNCTION_JUMP) {
             jumping = value != InputState.Off;
         }
     }
@@ -254,17 +235,5 @@ public class Main extends JmeLauncher implements StateFunctionListener, AnalogFu
         player.set(new PlayerInput(movement, rotation, jumping));
         // this does exactly the same as watchedEntity.set()
         // entityData.setComponent(playerId, new PlayerInput(new Vector3f(), new Quaternion().fromAngles(0, angles[1], 0)));
-
-        if (player.applyChanges()) {
-            ThirdPersonCamera thirdPersonCamera = getStateManager().getState(ThirdPersonCamera.class);
-            thirdPersonCamera.setTargetLocation(player.get(Position.class).getLocation());
-            thirdPersonCamera.setOffset(new Vector3f(0, 1, 0));
-        }
-
-        physicsTicks.setText(String.format("%d ticks per second", bulletSystem.getTicksPerSecond()));
-        Velocity velocity = player.get(Velocity.class);
-        if (velocity != null) {
-            speed.setText(String.format("Speed: %.1f", velocity.getVelocity()));
-        }
     }
 }

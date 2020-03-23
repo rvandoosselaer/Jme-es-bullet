@@ -27,7 +27,7 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.rvandoosselaer.jmeesbullet;
+package com.rvandoosselaer.jmeesbullet.cubes;
 
 import com.jme3.app.FlyCamAppState;
 import com.jme3.app.SimpleApplication;
@@ -51,6 +51,9 @@ import com.jme3.scene.shape.Quad;
 import com.jme3.scene.shape.Sphere;
 import com.jme3.shadow.DirectionalLightShadowFilter;
 import com.jme3.shadow.EdgeFilteringMode;
+import com.rvandoosselaer.jmeesbullet.BulletSystem;
+import com.rvandoosselaer.jmeesbullet.DefaultPhysicalShapeRegistry;
+import com.rvandoosselaer.jmeesbullet.PhysicalShapeRegistry;
 import com.rvandoosselaer.jmeesbullet.debug.BulletSystemDebugState;
 import com.rvandoosselaer.jmeesbullet.debug.PhysicalEntityDebugPublisher;
 import com.rvandoosselaer.jmeesbullet.es.Impulse;

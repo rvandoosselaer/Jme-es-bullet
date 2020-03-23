@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2019, Chimpstack
+ * Copyright (c) 2020, rvandoosselaer
  * All rights reserved.
  * <p>
  * Redistribution and use in source and binary forms, with or without
@@ -27,26 +27,44 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.chimpstack.jme3.es.bullet.character;
+package com.rvandoosselaer.jmeesbullet.cubes;
 
-import com.jme3.math.Quaternion;
-import com.jme3.math.Vector3f;
-import com.simsilica.es.PersistentComponent;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import com.jme3.scene.Spatial;
+import lombok.extern.slf4j.Slf4j;
 
-/**
- * A component specifying the location and rotation of a model.
- */
-@Getter
-@ToString
-@NoArgsConstructor
-@AllArgsConstructor
-public class Position implements PersistentComponent {
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-    private Vector3f location;
-    private Quaternion rotation;
+@Slf4j
+public class DefaultModelRegistry implements ModelRegistry {
+
+    private final Map<String, Spatial> registry = new ConcurrentHashMap<>();
+
+    @Override
+    public Spatial register(Model model, Spatial spatial) {
+        registry.put(model.getModelId(), spatial);
+        log.trace("Registering {} -> {}", model, spatial);
+        return spatial;
+    }
+
+    @Override
+    public Spatial get(Model model) {
+        Spatial spatial = registry.get(model.getModelId());
+        if (spatial != null) {
+            log.trace("Retrieving {} -> {}", model, spatial);
+            return spatial;
+        }
+
+        spatial = loadModel(model);
+        if (spatial == null) {
+            throw new IllegalArgumentException("No model found for " + model);
+        }
+
+        return register(model, spatial);
+    }
+
+    protected Spatial loadModel(Model model) {
+        return null;
+    }
 
 }
