@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2019, Chimpstack
+ * Copyright (c) 2020, rvandoosselaer
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,29 +27,29 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.chimpstack.jme3.es.bullet;
+package com.rvandoosselaer.jmeesbullet.debug;
+
+import com.jme3.math.Quaternion;
+import com.jme3.math.Vector3f;
+import com.simsilica.es.EntityComponent;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 /**
- * A driver that can control a {@link PhysicalEntity}.
+ * An entity component specifying the location, rotation and status of the physical entity in the physics space.
  */
-public interface PhysicalEntityDriver {
+@Getter
+@ToString
+@RequiredArgsConstructor
+public class PhysicalEntityDebug implements EntityComponent {
 
-    /**
-     * Called when the driver is attached to the physical entity
-     * @param entity the entity where the driver is attached to
-     */
-    public void initialize(PhysicalEntity entity);
+    public static final int STATIC = 0;
+    public static final int ACTIVE = 1;
+    public static final int INACTIVE = 2;
 
-    /**
-     * Called each frame in the {@link BulletSystem} before the physics simulation
-     * @param tpf the time per frame
-     */
-    public void update(float tpf);
-
-    /**
-     * Called when the driver is removed from the physical entity
-     * @param entity the entity where the driver is removed from
-     */
-    public void cleanup(PhysicalEntity entity);
+    private final int status;
+    private final Vector3f location;
+    private final Quaternion rotation;
 
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2019, Chimpstack
+ * Copyright (c) 2020, rvandoosselaer
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,26 +27,23 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.chimpstack.jme3.es.bullet;
+package com.rvandoosselaer.jmeesbullet.es;
 
-import com.jme3.math.Quaternion;
-import com.jme3.math.Vector3f;
+import com.rvandoosselaer.jmeesbullet.PhysicalShapeRegistry;
 import com.simsilica.es.EntityComponent;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 /**
- * An entity component specifying the location and rotation of a physical entity.
+ * An entity component specifying the collision shape of a physical entity. The collision shape can be retrieved from
+ * the {@link PhysicalShapeRegistry}
  */
 @Getter
 @ToString
-@NoArgsConstructor
-@AllArgsConstructor
-public class WarpPosition implements EntityComponent {
+@RequiredArgsConstructor
+public class PhysicalShape implements EntityComponent {
 
-    private Vector3f location;
-    private Quaternion rotation;
+    private final String shapeId;
 
 }

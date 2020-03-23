@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2019, Chimpstack
+ * Copyright (c) 2020, rvandoosselaer
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,24 +27,24 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.chimpstack.jme3.es.bullet;
+package com.rvandoosselaer.jmeesbullet.es;
 
+import com.jme3.math.Quaternion;
+import com.jme3.math.Vector3f;
 import com.simsilica.es.EntityComponent;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 /**
- * An entity component specifying the mass of a physical entity. When setting a mass of zero the physical entity will
- * be static.
+ * An entity component specifying the location and rotation of a physical entity.
  */
 @Getter
 @ToString
-@NoArgsConstructor
-@AllArgsConstructor
-public class Mass implements EntityComponent {
+@RequiredArgsConstructor
+public class WarpPosition implements EntityComponent {
 
-    private float mass;
+    private final Vector3f location;
+    private final Quaternion rotation;
 
 }

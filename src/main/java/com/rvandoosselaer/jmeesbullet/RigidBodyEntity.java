@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2019, Chimpstack
+ * Copyright (c) 2020, rvandoosselaer
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,21 +27,23 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.chimpstack.jme3.es.bullet;
+package com.rvandoosselaer.jmeesbullet;
 
 import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
+import com.rvandoosselaer.jmeesbullet.es.Mass;
 import com.simsilica.es.EntityId;
 import lombok.ToString;
 
 /**
  * A bullet rigidbody object directly linked to an entity.
  */
-@ToString(of = "entityId")
+@ToString(onlyExplicitlyIncluded = true)
 public class RigidBodyEntity extends PhysicsRigidBody implements PhysicalEntity<PhysicsRigidBody> {
 
+    @ToString.Include
     private final EntityId entityId;
     private PhysicalEntityDriver driver;
 
@@ -84,10 +86,10 @@ public class RigidBodyEntity extends PhysicsRigidBody implements PhysicalEntity<
         if (this.driver != null) {
             this.driver.cleanup(this);
         }
-        this.driver = driver;
-        if (this.driver != null) {
-            this.driver.initialize(this);
+        if (driver != null) {
+            driver.initialize(this);
         }
+        this.driver = driver;
     }
 
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2019, Chimpstack
+ * Copyright (c) 2020, rvandoosselaer
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,14 +27,14 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.chimpstack.jme3.es.bullet.debug;
+package com.rvandoosselaer.jmeesbullet.debug;
 
+import com.rvandoosselaer.jmeesbullet.PhysicalEntity;
+import com.rvandoosselaer.jmeesbullet.PhysicalEntityListener;
+import com.rvandoosselaer.jmeesbullet.RigidBodyEntity;
 import com.simsilica.es.EntityData;
 import com.simsilica.sim.SimTime;
 import lombok.RequiredArgsConstructor;
-import org.chimpstack.jme3.es.bullet.PhysicalEntity;
-import org.chimpstack.jme3.es.bullet.PhysicalEntityListener;
-import org.chimpstack.jme3.es.bullet.RigidBodyEntity;
 
 /**
  * A {@link PhysicalEntityListener} implementation that publishes, updates and removes {@link PhysicalEntityDebug}

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2019, Chimpstack
+ * Copyright (c) 2020, rvandoosselaer
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,24 +27,22 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.chimpstack.jme3.es.bullet;
+package com.rvandoosselaer.jmeesbullet.es;
 
 import com.simsilica.es.EntityComponent;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 /**
- * An entity component specifying the collision shape of a physical entity. The collision shape can be retrieved from
- * the {@link PhysicalShapeRegistry}
+ * An entity component specifying the mass of a physical entity. When setting a mass of zero the physical entity will
+ * be static.
  */
 @Getter
 @ToString
-@NoArgsConstructor
-@AllArgsConstructor
-public class PhysicalShape implements EntityComponent {
+@RequiredArgsConstructor
+public class Mass implements EntityComponent {
 
-    private String shapeId;
+    private final float mass;
 
 }

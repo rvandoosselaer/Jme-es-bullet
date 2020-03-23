@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2019, Chimpstack
+ * Copyright (c) 2020, rvandoosselaer
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,32 +27,36 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.chimpstack.jme3.es.bullet.debug;
+package com.rvandoosselaer.jmeesbullet.debug;
 
 import com.jme3.app.Application;
+import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.BaseAppState;
 import com.jme3.bullet.util.DebugShapeFactory;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
+import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
+import com.jme3.scene.SceneGraphVisitorAdapter;
 import com.jme3.scene.Spatial;
+import com.rvandoosselaer.jmeesbullet.BulletSystem;
+import com.rvandoosselaer.jmeesbullet.PhysicalShapeRegistry;
+import com.rvandoosselaer.jmeesbullet.es.PhysicalShape;
 import com.simsilica.es.Entity;
 import com.simsilica.es.EntityContainer;
 import com.simsilica.es.EntityData;
 import com.simsilica.lemur.GuiGlobals;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.chimpstack.jme3.ApplicationGlobals;
-import org.chimpstack.jme3.es.bullet.PhysicalShape;
-import org.chimpstack.jme3.es.bullet.PhysicalShapeRegistry;
-import org.chimpstack.jme3.util.SpatialUtils;
 
 import java.util.Objects;
 
 /**
  * An application state that shows debug meshes of all physical entities that are managed by the ES. Objects that are
  * directly added to the physics space will not be shown!
- * The {@link PhysicalEntityDebugPublisher} should be added to the {@link org.chimpstack.jme3.es.bullet.BulletSystem}
+ * The {@link PhysicalEntityDebugPublisher} should be added to the {@link BulletSystem}
  * for this state to show anything.
  */
 @Slf4j
@@ -65,21 +69,34 @@ public class BulletSystemDebugState extends BaseAppState {
     private Material activeMaterial;
     private Material inActiveMaterial;
     private Material staticMaterial;
-    private ColorRGBA activeColor = ColorRGBA.Green;
-    private ColorRGBA inActiveColor = ColorRGBA.Blue;
-    private ColorRGBA staticColor = ColorRGBA.White;
     private Node debugNode = new Node("BulletSystem - debug");
     private DebugObjects debugObjects;
+    @Getter
+    @Setter
+    private ColorRGBA activeColor = ColorRGBA.Green;
+    @Getter
+    @Setter
+    private ColorRGBA inActiveColor = ColorRGBA.Blue;
+    @Getter
+    @Setter
+    private ColorRGBA staticColor = ColorRGBA.White;
+    @Getter
+    @Setter
+    private Node node;
 
     @Override
     protected void initialize(Application app) {
         debugObjects = new DebugObjects(entityData);
         debugObjects.start();
+
+        if (node == null) {
+            node = ((SimpleApplication) app).getRootNode();
+        }
     }
 
     @Override
     protected void onEnable() {
-        ApplicationGlobals.getInstance().getRootNode().attachChild(debugNode);
+        node.attachChild(debugNode);
     }
 
     @Override
@@ -153,12 +170,16 @@ public class BulletSystemDebugState extends BaseAppState {
             object.setLocalTranslation(entityDebug.getLocation());
             object.setLocalRotation(entityDebug.getRotation());
 
-            SpatialUtils.getFirstGeometry(object).ifPresent(g -> {
-                Material material = getMaterial(entityDebug.getStatus());
-                if (!Objects.equals(material, g.getMaterial())) {
-                    g.setMaterial(material);
+            object.depthFirstTraversal(new SceneGraphVisitorAdapter() {
+                @Override
+                public void visit(Geometry geom) {
+                    Material material = getMaterial(entityDebug.getStatus());
+                    if (!Objects.equals(material, geom.getMaterial())) {
+                        geom.setMaterial(material);
+                    }
                 }
             });
+
         }
 
         @Override

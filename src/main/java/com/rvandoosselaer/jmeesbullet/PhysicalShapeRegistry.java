@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2019, Chimpstack
+ * Copyright (c) 2020, rvandoosselaer
  * All rights reserved.
  * <p>
  * Redistribution and use in source and binary forms, with or without
@@ -27,33 +27,40 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.chimpstack.jme3.es.bullet;
+package com.rvandoosselaer.jmeesbullet;
 
-import com.jme3.math.Vector3f;
-import com.simsilica.es.EntityComponent;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import com.jme3.bullet.collision.shapes.CollisionShape;
+import com.rvandoosselaer.jmeesbullet.es.PhysicalShape;
 
 /**
- * An entity component specifying an impulse on the physical entity.
- * The impulse component is removed as soon as it's applied.
+ * A register of collision shapes that can be retrieved by a key.
  */
-@Getter
-@ToString
-@NoArgsConstructor
-public class Impulse implements EntityComponent {
+public interface PhysicalShapeRegistry {
 
-    private Vector3f linearVelocity;
-    private Vector3f angularVelocity;
+    /**
+     * Register the collision shape with the physical component.
+     *
+     * @param shapeId
+     * @param collisionShape
+     * @return the collision shape
+     */
+    CollisionShape register(String shapeId, CollisionShape collisionShape);
 
-    public Impulse(Vector3f linearVelocity) {
-        this(linearVelocity, null);
-    }
+    /**
+     * Register the collision shape with the physical shape component
+     *
+     * @param physicalShape  the physical shape component holding the key
+     * @param collisionShape the physical collision shape
+     * @return the collision shape linked to the physical shape
+     */
+    CollisionShape register(PhysicalShape physicalShape, CollisionShape collisionShape);
 
-    public Impulse(Vector3f linearVelocity, Vector3f angularVelocity) {
-        this.linearVelocity = linearVelocity;
-        this.angularVelocity = angularVelocity;
-    }
+    /**
+     * Returns the collision shape linked to the physical shape component
+     *
+     * @param physicalShape the physical shape component holding the key
+     * @return the collision shape linked to the physical shape
+     */
+    CollisionShape get(PhysicalShape physicalShape);
 
 }

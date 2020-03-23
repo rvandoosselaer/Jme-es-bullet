@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2019, Chimpstack
+ * Copyright (c) 2020, rvandoosselaer
  * All rights reserved.
  * <p>
  * Redistribution and use in source and binary forms, with or without
@@ -27,14 +27,25 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.chimpstack.jme3.es.bullet;
+package com.rvandoosselaer.jmeesbullet;
 
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.math.Vector3f;
 import com.jme3.util.SafeArrayList;
-import com.simsilica.es.*;
+import com.rvandoosselaer.jmeesbullet.es.Impulse;
+import com.rvandoosselaer.jmeesbullet.es.Mass;
+import com.rvandoosselaer.jmeesbullet.es.PhysicalShape;
+import com.rvandoosselaer.jmeesbullet.es.WarpPosition;
+import com.simsilica.es.Entity;
+import com.simsilica.es.EntityContainer;
+import com.simsilica.es.EntityData;
+import com.simsilica.es.EntityId;
+import com.simsilica.es.EntitySet;
 import com.simsilica.sim.AbstractGameSystem;
 import com.simsilica.sim.SimTime;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Queue;
@@ -42,10 +53,10 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
- * A {@link com.simsilica.sim.GameSystem} implementation that sets up a Bullet {@link PhysicsSpace} and manages
- * physical entities in that space.
+ * A GameSystem implementation that sets up a Bullet PhysicsSpace and manages physical entities in that space.
  * Physical entities that have a {@link WarpPosition}, {@link Mass} and {@link PhysicalShape} will be picked up and
  * added/updated/removed from the physics space.
+ * <p>
  * Other systems can register {@link PhysicalEntityListener} to be notified about changes of the entities.
  * A {@link PhysicalEntityDriver} can be registered on a physical entity using
  * {@link #setPhysicalEntityDriver(EntityId, PhysicalEntityDriver)}. Drivers can be used to steer physical entities.
@@ -53,18 +64,26 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 @Slf4j
 public class BulletSystem extends AbstractGameSystem {
 
+    @Getter
+    @Setter
     private EntityData entityData;
-
+    @Getter
     private PhysicsSpace physicsSpace;
+    @Getter
+    @Setter
     private PhysicsSpace.BroadphaseType broadphaseType = PhysicsSpace.BroadphaseType.DBVT;
+    @Getter
+    @Setter
     private Vector3f worldMin = new Vector3f(-10000f, -10000f, -10000f);
+    @Getter
+    @Setter
     private Vector3f worldMax = new Vector3f(10000f, 10000f, 10000f);
+    @Getter
+    @Setter
     private float speed = 1.0f;
-
     private boolean calculateTicks = true;
     private float timeCounter;
     private int frameCounter;
-    private int ticksPerSecond;
 
     // a list of physical entity listeners
     private SafeArrayList<PhysicalEntityListener> physicalEntityListeners = new SafeArrayList<>(PhysicalEntityListener.class);
@@ -73,6 +92,8 @@ public class BulletSystem extends AbstractGameSystem {
     // a queue for pending PhysicalEntityDriver setup
     private Queue<PhysicalEntityDriverSetup> pendingDriverSetup = new ConcurrentLinkedQueue<>();
     // the registry of collision shapes
+    @Getter
+    @Setter
     private PhysicalShapeRegistry shapeRegistry;
     // the entity set of all impulses
     private EntitySet impulses;
@@ -93,18 +114,16 @@ public class BulletSystem extends AbstractGameSystem {
     protected void initialize() {
         if (entityData == null) {
             entityData = getSystem(EntityData.class);
-        }
-
-        if (entityData == null) {
-            throw new IllegalStateException("EntityData is not set when initializing BulletSystem!");
+            if (entityData == null) {
+                throw new IllegalStateException("EntityData is not set when initializing BulletSystem!");
+            }
         }
 
         if (shapeRegistry == null) {
             shapeRegistry = getSystem(PhysicalShapeRegistry.class);
-        }
-
-        if (shapeRegistry == null) {
-            throw new IllegalStateException("PhysicalShapeRegistry is not set when initializing BulletSystem!");
+            if (shapeRegistry == null) {
+                throw new IllegalStateException("PhysicalShapeRegistry is not set when initializing BulletSystem!");
+            }
         }
 
         physicsSpace = new PhysicsSpace(worldMin, worldMax, broadphaseType);
@@ -121,18 +140,6 @@ public class BulletSystem extends AbstractGameSystem {
     public void update(SimTime time) {
         // call the start of the physics tick
         startFrame(time);
-
-        // perform ticksPerSecond calculation
-        if (calculateTicks) {
-            timeCounter += time.getTpf();
-            frameCounter++;
-            if (timeCounter >= 1) {
-                // one second has passed
-                ticksPerSecond = (int) (frameCounter / timeCounter);
-                timeCounter = 0;
-                frameCounter = 0;
-            }
-        }
 
         // update the entity container
         rigidBodyContainer.update();
@@ -201,22 +208,6 @@ public class BulletSystem extends AbstractGameSystem {
         this.entityData = entityData;
     }
 
-    public float getSpeed() {
-        return speed;
-    }
-
-    public void setSpeed(float speed) {
-        this.speed = speed;
-    }
-
-    public PhysicsSpace getPhysicsSpace() {
-        return physicsSpace;
-    }
-
-    public int getTicksPerSecond() {
-        return ticksPerSecond;
-    }
-
     public void addPhysicalEntityListener(PhysicalEntityListener physicalEntityListener) {
         physicalEntityListeners.add(physicalEntityListener);
     }
@@ -228,18 +219,6 @@ public class BulletSystem extends AbstractGameSystem {
     public void setPhysicalEntityDriver(EntityId entityId, PhysicalEntityDriver driver) {
         // add to the setup queue
         pendingDriverSetup.offer(new PhysicalEntityDriverSetup(entityId, driver));
-    }
-
-    public PhysicalShapeRegistry getShapeRegistry() {
-        return shapeRegistry;
-    }
-
-    /**
-     * Sets the collision shapes registry that will be used to find collision shapes for physical entities.
-     * @param shapeRegistry the collision shapes registry
-     */
-    public void setShapeRegistry(PhysicalShapeRegistry shapeRegistry) {
-        this.shapeRegistry = shapeRegistry;
     }
 
     private void applyImpulses(Set<Entity> impulses) {
@@ -351,15 +330,11 @@ public class BulletSystem extends AbstractGameSystem {
     }
 
     // helper class to setup a driver on an entity, when the setup fails more then 99 times, it's aborted.
+    @RequiredArgsConstructor
     private class PhysicalEntityDriverSetup {
         private final EntityId entityId;
         private final PhysicalEntityDriver driver;
         private int tries;
-
-        public PhysicalEntityDriverSetup(EntityId entityId, PhysicalEntityDriver driver) {
-            this.entityId = entityId;
-            this.driver = driver;
-        }
 
         public boolean execute() {
             RigidBodyEntity rigidBodyEntity = rigidBodyContainer.getObject(entityId);
