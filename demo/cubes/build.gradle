@@ -47,5 +47,5 @@ dependencies {
 }
 
 run {
-    mainClassName = "com.rvandoosselaer.jmeesbullet.cubes.Main"
+    mainClassName = "com.rvandoosselaer.jmeesminie.cubes.Main"
 }
