@@ -1,6 +1,6 @@
 plugins {
-    id 'java'
     id 'idea'
+    id 'java-library'
     id 'maven-publish'
     id 'com.jfrog.bintray' version "1.8.4"
 }
@@ -10,9 +10,11 @@ version = "1.0.0-SNAPSHOT"
 
 ext {
     jmeVersion = "[3.3,)"
-    zayESVersion = "[1.3,)"
     sio2Version = "[1.3,)"
+    zayESVersion = "[1.3,)"
+    slf4jVersion = "[1.8,)"
     lombokVersion = "[1.18,)"
+    minieVersion = "[1.5.0for33,)"
 }
 
 repositories {
@@ -20,11 +22,20 @@ repositories {
 }
 
 dependencies {
+    // JME
+    implementation "org.jmonkeyengine:jme3-core:${jmeVersion}"
+
+    // physics
+    implementation "com.github.stephengold:Minie:${minieVersion}"
+
+    // utilities
     compileOnly "org.projectlombok:lombok:${lombokVersion}"
     annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
-    compile "org.jmonkeyengine:jme3-bullet:${jmeVersion}"
-    compile "com.simsilica:zay-es:${zayESVersion}"
-    compile "com.simsilica:sio2:${sio2Version}"
+    implementation "com.simsilica:zay-es:${zayESVersion}"
+    implementation "com.simsilica:sio2:${sio2Version}"
+
+    // logging
+    implementation "org.slf4j:slf4j-api:${slf4jVersion}"
 }
 
 // copy the generated javadocs into the /docs folder for the github pages

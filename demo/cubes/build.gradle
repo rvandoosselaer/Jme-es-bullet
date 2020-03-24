@@ -1,6 +1,6 @@
 plugins {
-    id 'java'
     id 'idea'
+    id 'java'
     id 'application'
 }
 
@@ -17,18 +17,11 @@ ext {
 
 repositories {
     jcenter()
-    maven {
-        url "https://dl.bintray.com/jmonkeyengine/org.jmonkeyengine"
-    }
 }
 
-def useNativeBullet = true
-
 dependencies {
-    // jme3-es-bullet
-    compile(rootProject) {
-        exclude group: "org.jmonkeyengine", module: "jme3-bullet"
-    }
+    // jme-es-bullet
+    compile(rootProject)
 
     // jmonkey engine
     compile "org.jmonkeyengine:jme3-core:${jmeVersion}"
@@ -36,25 +29,13 @@ dependencies {
     compile "org.jmonkeyengine:jme3-lwjgl:${jmeVersion}"
     compile "org.jmonkeyengine:jme3-effects:${jmeVersion}"
 
-    if (useNativeBullet) {
-        compile "org.jmonkeyengine:jme3-bullet:$jmeVersion"
-        compile "org.jmonkeyengine:jme3-bullet-native:$jmeVersion"
-    } else {
-        compile("org.jmonkeyengine:jme3-jbullet:$jmeVersion") {
-            exclude group: 'jbullet', module: 'jbullet'
-            exclude group: 'stack-alloc', module: 'stack-alloc'
-        }
-        // libraries are found on github: https://github.com/jMonkeyEngine/jmonkeyengine/tree/master/lib
-        compile files('lib/jbullet.jar')
-        runtime files('lib/stack-alloc.jar')
-    }
-
     // utils
     compileOnly "org.projectlombok:lombok:${lombokVersion}"
     annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
     compile "com.simsilica:lemur:${lemurVersion}"
     compile "com.simsilica:sio2:${sio2Version}"
-    //compile "org.hsqldb:hsqldb:${hsqldbVersion}"
+    compile "com.simsilica:zay-es:${zayESVersion}"
+    compile "com.github.stephengold:Minie:${minieVersion}"
 
     // logging
     compile "org.slf4j:slf4j-api:${slf4jVersion}"
