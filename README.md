@@ -1,4 +1,4 @@
-# ![Jme-es-physics](icon-64.png) Jme-es-physics
+# ![jme-es-physics](icon-64.png) jme-es-physics
 
 A Minie Zay-ES integration for jMonkeyEngine.
 
