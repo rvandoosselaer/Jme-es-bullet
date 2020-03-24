@@ -2,7 +2,11 @@ plugins {
     id 'java'
     id 'idea'
     id 'maven-publish'
+    id 'com.jfrog.bintray' version "1.8.4"
 }
+
+group = "com.rvandoosselaer"
+version = "1.0.0-SNAPSHOT"
 
 ext {
     jmeVersion = "[3.3,)"
@@ -16,12 +20,59 @@ repositories {
 }
 
 dependencies {
-    // dependencies that should be provided
     compileOnly "org.projectlombok:lombok:${lombokVersion}"
     annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
-
-    // dependencies that are provided
     compile "org.jmonkeyengine:jme3-bullet:${jmeVersion}"
     compile "com.simsilica:zay-es:${zayESVersion}"
     compile "com.simsilica:sio2:${sio2Version}"
+}
+
+// copy the generated javadocs into the /docs folder for the github pages
+task copyJavadoc(dependsOn: javadoc) {
+    doLast {
+        copy {
+            from "$buildDir/docs"
+            into "$projectDir/docs"
+        }
+    }
+}
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allJava
+    archiveClassifier = 'sources'
+}
+
+task javadocJar(type: Jar) {
+    from javadoc
+    archiveClassifier = 'javadoc'
+}
+
+publishing {
+    publications {
+        MyPublication(MavenPublication) {
+            from components.java
+            artifact sourcesJar
+            artifact javadocJar
+        }
+    }
+}
+
+javadoc {
+    failOnError = false
+}
+
+bintray {
+    user = System.getenv('BINTRAY_USER')
+    key = System.getenv('BINTRAY_APIKEY')
+    publications = ['MyPublication']
+    pkg {
+        repo = 'rvandoosselaer'
+        name = rootProject.getName()
+        licenses = ['BSD 3-Clause']
+        vcsUrl = 'https://github.com/rvandoosselaer/Jme-es-bullet.git'
+        version {
+            name = '1.0.0-SNAPSHOT'
+            released = new Date()
+        }
+    }
 }
