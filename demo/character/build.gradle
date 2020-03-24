@@ -46,5 +46,5 @@ dependencies {
 }
 
 run {
-    mainClassName = "com.rvandoosselaer.jmeesminie.character.Main"
+    mainClassName = "com.rvandoosselaer.jmeesphysics.character.Main"
 }
