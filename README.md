@@ -20,6 +20,20 @@ dependencies {
 }
 ```
 
+**Dependencies overview:**
+
+-   jMonkeyEngine version 3.3 or higher
+-   Zay-ES version 1.3.1 or higher
+-   Sio2 version 1.3.0 or higher
+-   Minie version 1.5.0for33 or higher
+
+```groovy
+implementation "org.jmonkeyengine:jme3-core:3.3.0-beta1"
+implementation "com.github.stephengold:Minie:1.5.0for33"
+implementation "com.simsilica:zay-es:1.3.1"
+implementation "com.simsilica:sio2:1.3.0"
+```
+
 ## Get started
 
 To use the ES based bullet integration you need to add the `BulletSystem` to the `GameSystemManager`. The BulletSystem
