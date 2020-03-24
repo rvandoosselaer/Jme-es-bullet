@@ -1,6 +1,6 @@
 package com.rvandoosselaer.jmeesbullet.character;
 
-import com.jme3.app.FlyCamAppState;
+import com.jme3.app.ChaseCameraAppState;
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.StatsAppState;
 import com.jme3.bullet.collision.PhysicsCollisionObject;
@@ -9,6 +9,7 @@ import com.jme3.input.KeyInput;
 import com.jme3.light.AmbientLight;
 import com.jme3.light.DirectionalLight;
 import com.jme3.math.ColorRGBA;
+import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.post.FilterPostProcessor;
@@ -16,6 +17,7 @@ import com.jme3.post.filters.FXAAFilter;
 import com.jme3.post.ssao.SSAOFilter;
 import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.Geometry;
+import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.shadow.DirectionalLightShadowFilter;
 import com.jme3.shadow.EdgeFilteringMode;
@@ -57,6 +59,7 @@ public class Main extends SimpleApplication implements StateFunctionListener, An
     private EntityId playerId;
     private WatchedEntity player;
     private InputMapper inputMapper;
+    private Node cameraTarget = new Node();
 
     private boolean setupComplete = false;
     private boolean rotating = false;
@@ -74,7 +77,7 @@ public class Main extends SimpleApplication implements StateFunctionListener, An
     public Main() {
         super(new StatsAppState(),
                 new GameSystemsState(true),
-                new FlyCamAppState());
+                new ChaseCameraAppState());
     }
 
     @Override
@@ -100,6 +103,11 @@ public class Main extends SimpleApplication implements StateFunctionListener, An
 
         inputMapper.addStateListener(this, FUNCTION_JUMP);
         inputMapper.addAnalogListener(this, FUNCTION_MOVE, FUNCTION_STRAFE);
+
+        ChaseCameraAppState chaseCameraAppState = getStateManager().getState(ChaseCameraAppState.class);
+        chaseCameraAppState.setDragToRotate(true);
+        chaseCameraAppState.setDefaultVerticalRotation(45 * FastMath.DEG_TO_RAD);
+        chaseCameraAppState.setTarget(cameraTarget);
     }
 
     protected void setupGameSystems() {
@@ -235,5 +243,9 @@ public class Main extends SimpleApplication implements StateFunctionListener, An
         player.set(new PlayerInput(movement, rotation, jumping));
         // this does exactly the same as watchedEntity.set()
         // entityData.setComponent(playerId, new PlayerInput(new Vector3f(), new Quaternion().fromAngles(0, angles[1], 0)));
+
+        if (player.applyChanges()) {
+            cameraTarget.setLocalTranslation(player.get(Position.class).getLocation());
+        }
     }
 }

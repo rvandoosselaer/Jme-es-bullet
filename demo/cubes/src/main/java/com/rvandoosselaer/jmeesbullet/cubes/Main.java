@@ -29,7 +29,7 @@
  */
 package com.rvandoosselaer.jmeesbullet.cubes;
 
-import com.jme3.app.FlyCamAppState;
+import com.jme3.app.ChaseCameraAppState;
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.StatsAppState;
 import com.jme3.bullet.collision.shapes.BoxCollisionShape;
@@ -46,6 +46,7 @@ import com.jme3.post.filters.FXAAFilter;
 import com.jme3.post.ssao.SSAOFilter;
 import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.Geometry;
+import com.jme3.scene.Node;
 import com.jme3.scene.shape.Box;
 import com.jme3.scene.shape.Quad;
 import com.jme3.scene.shape.Sphere;
@@ -90,7 +91,7 @@ public class Main extends SimpleApplication {
     public Main() {
         super(new StatsAppState(),
                 new GameSystemsState(true),
-                new FlyCamAppState());
+                new ChaseCameraAppState());
     }
 
     @Override
@@ -110,8 +111,10 @@ public class Main extends SimpleApplication {
 
         setupPostProcessing();
 
-        flyCam.setMoveSpeed(5);
-        flyCam.setDragToRotate(true);
+        ChaseCameraAppState chaseCameraAppState = getStateManager().getState(ChaseCameraAppState.class);
+        chaseCameraAppState.setDragToRotate(true);
+        chaseCameraAppState.setDefaultVerticalRotation(45 * FastMath.DEG_TO_RAD);
+        chaseCameraAppState.setTarget(new Node());
     }
 
     //@SneakyThrows(SQLException.class)
