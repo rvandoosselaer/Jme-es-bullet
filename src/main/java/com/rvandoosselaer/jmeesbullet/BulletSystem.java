@@ -65,7 +65,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class BulletSystem extends AbstractGameSystem {
 
     @Getter
-    @Setter
     private EntityData entityData;
     @Getter
     private PhysicsSpace physicsSpace;

@@ -37,6 +37,10 @@ task copyJavadoc(dependsOn: javadoc) {
     }
 }
 
+build {
+    dependsOn copyJavadoc
+}
+
 task sourcesJar(type: Jar) {
     from sourceSets.main.allJava
     archiveClassifier = 'sources'
