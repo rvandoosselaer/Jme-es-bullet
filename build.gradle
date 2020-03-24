@@ -84,7 +84,7 @@ bintray {
         repo = 'rvandoosselaer'
         name = rootProject.getName()
         licenses = ['BSD 3-Clause']
-        vcsUrl = 'https://github.com/rvandoosselaer/Jme-es-bullet.git'
+        vcsUrl = 'https://github.com/rvandoosselaer/Jme-es-minie.git'
         version {
             name = '1.0.0-SNAPSHOT'
             released = new Date()
