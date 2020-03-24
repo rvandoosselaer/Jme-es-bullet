@@ -1,23 +1,13 @@
-# ![Jme-es-bullet](icon-64.png) Jme-es-bullet
-A bullet Zay-ES integration for jMonkeyEngine.
+# ![Jme-es-minie](icon-64.png) Jme-es-minie
 
-## How to build
-This library uses [gradle](https://gradle.org/gradle-download/) as build system, and comes with the gradle wrapper included.
-So no prior installation on your computer is required! You can just use the `gradlew` or `gradlew.bat` executables in the root of the sources.
-
-To run a full build, use:
-
-```bash
-$ ./gradlew build
-```
-
-To get an overview of all gradle tasks use:
-
-```bash
-$ ./gradlew tasks
-```
+A Minie Zay-ES integration for jMonkeyEngine.
 
 ## How to use it
+
+:warning: This library is still under active development! The published version on jcenter is a SNAPSHOT version and could be changed at any time.
+
+## How to use it
+
 This library is still under active development and is not yet placed on a CDN like jcenter or mavencentral.
 However, it is possible to build the library and place it in your local maven repository.
 
@@ -39,13 +29,14 @@ dependencies {
 ```
 
 ## Get started
+
 To use the ES based bullet integration you need to add the `BulletSystem` to the `GameSystemManager`. The BulletSystem
 also needs access to the `EntityData` and `PhysicalShapeRegistry`. That's it really!
 
 The EntityData and PhysicalShapeRegistry can be provided in the constructor when initializing the BulletSystem. Or they
 can be injected automatically when they are registered as system-level objects to the GameSystemManager.
 
-```
+```java
 entityData = systems.register(EntityData.class, new DefaultEntityData());
 shapeRegistry = systems.register(PhysicalShapeRegistry.class, new DefaultPhysicalShapeRegistry());
 bulletSystem = systems.register(BulletSystem.class, new BulletSystem());
@@ -56,7 +47,7 @@ EntityData entityData = getSystem(EntityData.class);
 
 or
 
-```
+```java
 EntityData entityData = new DefaultEntityData();
 PhysicalShapeRegistry shapeRegistry = new DefaultPhysicalShapeRegistry();
 bulletSystem = systems.register(BulletSystem.class, new BulletSystem(entityData, shapeRegistry));
@@ -64,7 +55,7 @@ bulletSystem = systems.register(BulletSystem.class, new BulletSystem(entityData,
 
 The PhysicalShapeRegistry is used to link a `CollisionShape` to a physical entity using a `PhysicalShape` component.
 
-```
+```java
 PhysicalShapeRegistry shapeRegistry = new DefaultPhysicalShapeRegistry();
 shapeRegistry.register(new PhysicalShape("cube"), new BoxCollisionShape(new Vector3f(0.5f, 0.5f, 0.5f)));
 ```
@@ -73,9 +64,9 @@ The library has a `CollisionShapeHelper` class with multiple static methods to f
 objects.
 
 An entity will be picked up by the BulletSystem when it has the following components:
-- Mass
-- PhysicalShape
-- WarpPosition
+-   Mass
+-   PhysicalShape
+-   WarpPosition
 
 Other systems can hook in on the Bullet update loop and can be notified about updates of entities in the physics space 
 using a `PhysicalEntityListener`.
@@ -83,7 +74,7 @@ using a `PhysicalEntityListener`.
 A PhysicalEntityListener implementation can for example be used to publish Position components on a physical entity to 
 update the location and rotation of the Model of the entity.
 
-```
+```java
 bulletSystem.addPhysicalEntityListener(new PositionPublisher());
 
 public class PositionPublisher implements PhysicalEntityListener {
@@ -101,6 +92,7 @@ public class PositionPublisher implements PhysicalEntityListener {
 ```
 
 ### Demo
+
 Two demo applications are included as examples.
 
 The cubes demo is an application where you can shoot boxes and balls on a platform.
@@ -120,13 +112,16 @@ $ ./gradlew :demo:character:run
 ```
 
 ### Acknowledgements
+
 -   Icon made by [Freepik](https://www.freepik.com/home) from www.flaticon.com
 
 
 ## Bullet documentation
+
 Some information gathered about bullet during the creation of the Bullet Zay-ES integration library.
 
 ### Continuous collision detection
+
 CCD is short for Continuous Collision Detection, which is a workaround for a common problem in game physics: a fast 
 moving body might not collide with an obstacle if in one frame it is "before" the obstacle, and in the next one it is 
 already "behind" the obstacle. At no frame the fast moving body overlaps with the obstacle, and thus no response is 
@@ -152,6 +147,7 @@ collision detection.
 Set the setCcdMotionThreshold to a value `>0` or `0` to disable.
 
 ### Capsule collision shape
+
 The size of the capsule is set using a radius and a height value. These values are the radius of the top and bottom semi
 spheres and the radius and height of the cylinder.
 If you want a capsule with a radius of 1 and a height of 5, you should give a radius of 1 and a height of 3 to the

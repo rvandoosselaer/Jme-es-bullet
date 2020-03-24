@@ -1,4 +1,4 @@
-rootProject.name = "jme3-es-bullet"
+rootProject.name = "jme3-es-minie"
 
 include ':demo:cubes'
 include ':demo:character'
