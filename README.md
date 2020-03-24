@@ -1,4 +1,4 @@
-# ![Jme-es-minie](icon-64.png) Jme-es-minie
+# ![Jme-es-physics](icon-64.png) Jme-es-physics
 
 A Minie Zay-ES integration for jMonkeyEngine.
 
@@ -16,7 +16,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.rvandoosselaer:jme-es-minie:1.0.0'
+    implementation 'com.rvandoosselaer:jme-es-physics:1.0.0'
 }
 ```
 
